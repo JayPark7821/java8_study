@@ -26,6 +26,73 @@ public class App {
 		Optional<Progress> progress = spring_boot.getProgress();
 		progress.ifPresent(p -> System.out.println(p.getStudyDuration()));
 
+		Optional<OnlineClass> optionalSpring = springClasses.stream()
+			.filter(oc -> oc.getTitle().startsWith("spring"))
+			.findFirst();
 
+		boolean present = optionalSpring.isPresent();
+		System.out.println("present = " + present);
+
+		Optional<OnlineClass> optionalJay = springClasses.stream()
+			.filter(oc -> oc.getTitle().startsWith("jay"))
+			.findFirst();
+
+		boolean present1 = optionalJay.isPresent();
+		System.out.println("present1 = " + present1);
+
+
+		//  public void ifPresent(Consumer<? super T> action) {
+		//         if (value != null) {
+		//             action.accept(value);
+		//         }
+		//     }
+		optionalSpring.ifPresent(oc -> System.out.println(oc.getTitle()));
+		
+		
+		OnlineClass onlineClass = optionalSpring.orElse(createNewClass());
+		System.out.println("onlineClass.getTitle() = " + onlineClass.getTitle());
+
+		OnlineClass onlineClass1 = optionalJay.orElse(createNewClass());
+		System.out.println("onlineClass1.getTitle() = " + onlineClass1.getTitle());
+
+
+
+		OnlineClass onlineClassOrElseGet = optionalSpring.orElseGet(App::createNewClass);
+		System.out.println("onlineClass.getTitle() = " + onlineClassOrElseGet.getTitle());
+
+		OnlineClass onlineClass1OrElseGet = optionalJay.orElseGet(() ->createNewClass());
+		System.out.println("onlineClass1.getTitle() = " + onlineClass1OrElseGet.getTitle());
+
+
+
+
+		OnlineClass onlineClassOrElseThrow = optionalSpring.orElseThrow(() -> {
+			return new IllegalArgumentException();
+		});
+		System.out.println("onlineClass.getTitle() = " + onlineClassOrElseThrow.getTitle());
+
+		OnlineClass onlineClass1OrElseThrow = optionalJay.orElseThrow(IllegalArgumentException::new);
+		System.out.println("onlineClass1.getTitle() = " + onlineClass1OrElseThrow.getTitle());
+
+		Optional<OnlineClass> onlineClass2 = optionalSpring.filter(oc -> !oc.isClosed());
+		System.out.println("onlineClass2 = " + onlineClass2.isEmpty());
+
+		Optional<OnlineClass> onlineClass3 = optionalJay.filter(oc -> !oc.isClosed());
+		System.out.println("onlineClass3 = " + onlineClass3);
+
+
+
+		Optional<Progress> progress1 = optionalSpring.flatMap(OnlineClass::getProgress);
+
+
+		Optional<Optional<Progress>> progress2 = optionalSpring.map(OnlineClass::getProgress);
+		Optional<Progress> progress3 = progress2.orElseThrow();
+
+
+	}
+
+	private static OnlineClass createNewClass() {
+		System.out.println("creating new online class");
+		return new OnlineClass(10,"New Class", false);
 	}
 }
